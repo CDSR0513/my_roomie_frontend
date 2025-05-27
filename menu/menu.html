@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>네비게이션</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #fbc2eb, #a6c1ee, #fddb92);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .bg-overlay {
+      background-color: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center px-4 py-6">
+
+  <div class="bg-overlay p-8 rounded-lg shadow-md w-full max-w-xs">
+    <nav class="flex flex-col items-center space-y-6">
+      <a href="profile.html" class="text-xl font-semibold text-indigo-700 hover:underline">내 프로필</a>
+      <a href="survey.html" class="text-xl font-semibold text-indigo-700 hover:underline">설문 작성</a>
+      <a href="surveyList.html" class="text-xl font-semibold text-indigo-700 hover:underline">전체 설문</a>
+      <a href="mySurveys.html" class="text-xl font-semibold text-indigo-700 hover:underline">내 설문</a>
+      <a href="match.html" class="text-xl font-semibold text-indigo-700 hover:underline">매칭 결과</a>
+    </nav>
+  </div>
+
+</body>
+</html>
