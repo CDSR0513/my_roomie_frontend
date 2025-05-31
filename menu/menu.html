@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>네비게이션</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #fbc2eb, #a6c1ee, #fddb92);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .bg-overlay {
+      background-color: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center px-4 py-6 space-y-4">
+
+  <!-- KNU myroomie 로고 -->
+  <div class="text-center">
+    <h1 class="text-3xl font-extrabold text-red-600 drop-shadow cursor-pointer" onclick="location.href='../menu/menu.html'">
+      KNU myroomie
+    </h1>
+    <p class="text-lg font-medium text-red-600 drop-shadow">
+      KNU dormitory roommate finder
+    </p>
+  </div>
+
+  <!-- 큰 검정 MENU 글자 (클릭 가능하게 수정) -->
+  <div class="text-center mt-4">
+    <a href="../menu/menu.html">
+      <h1 class="text-3xl font-extrabold text-black drop-shadow cursor-pointer">
+        MENU
+      </h1>
+    </a>
+  </div>
+
+  <!-- 메뉴 네모칸 -->
+  <div class="bg-overlay p-8 rounded-lg shadow-md w-full max-w-xs">
+    <nav class="flex flex-col items-center space-y-6">
+      <a href="../profile/profile.html" class="text-xl font-semibold text-black hover:underline hover:decoration-pink-300">내 프로필</a>
+      <a href="../survey/survey.html" class="text-xl font-semibold text-black hover:underline hover:decoration-pink-300">설문 작성</a>
+      <a href="../surveyList/surveyList.html" class="text-xl font-semibold text-black hover:underline hover:decoration-pink-300">전체 설문</a>
+      <a href="../mySurveys/mySurveys.html" class="text-xl font-semibold text-black hover:underline hover:decoration-pink-300">매칭하기</a>
+    </nav>
+  </div>
+
+</body>
+</html>

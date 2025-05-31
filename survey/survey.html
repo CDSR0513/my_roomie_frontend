@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>룸메이트 매칭 설문조사</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #fbc2eb, #a6c1ee, #fddb92);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .bg-overlay {
+      background-color: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(4px);
+    }
+    .section-card {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .radio-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .radio-item {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .radio-item:hover {
+      border-color: #f87171;
+      background-color: #fef2f2;
+    }
+    .radio-item input[type="radio"]:checked + label {
+      background-color: #fecaca;
+      border-color: #f87171;
+    }
+    .importance-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin: 12px 0;
+    }
+    .importance-item {
+      display: flex;
+      align-items: center;
+      padding: 6px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 14px;
+    }
+    .importance-item:hover {
+      border-color: #a78bfa;
+      background-color: #f3f4f6;
+    }
+    .importance-item input[type="radio"]:checked + label {
+      background-color: #ddd6fe;
+      border-color: #a78bfa;
+    }
+  </style>
+</head>
+<body class="min-h-screen py-8">
+   <div class="container mx-auto px-4 max-w-2xl">
+    <!-- 헤더 (로고 클릭 시 메뉴로 이동) -->
+    <div class="text-center mb-8">
+      <a href="../menu/menu.html">
+        <h1 class="text-3xl font-extrabold text-red-600 drop-shadow">
+          KNU myroomie
+        </h1>
+        <p class="text-lg font-medium text-red-600 drop-shadow">
+          룸메이트 매칭 설문조사
+        </p>
+      </a>
+    </div>
+
+
+    <form id="surveyForm">
+      <!-- 기숙사명 -->
+      <div class="section-card">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">🏠 기숙사명</h3>
+        <select id="dormName" class="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg">
+          <option value="">기숙사를 선택해주세요</option>
+            <option value="봉사관">봉사관</option>
+            <option value="진리관">진리관</option>
+            <option value="화목관">화목관</option>
+            <option value="향토관">향토관</option>
+            <option value="첨성관">첨성관</option>
+            <option value="명의관">명의관</option>
+            <option value="누리관">누리관</option>
+            <option value="보람관">보람관</option>
+        </select>
+        
+        <div class="mt-4">
+          <p class="text-sm font-medium text-gray-700 mb-2">💡 같은 기숙사 조건이 얼마나 중요한가요?</p>
+          <div class="importance-group">
+            <label class="importance-item">
+              <input type="radio" name="dormImportance" value="1" class="mr-3">
+              <span>다른 기숙사여도 괜찮아요</span>
+            </label>
+            <label class="importance-item">
+              <input type="radio" name="dormImportance" value="2" class="mr-3">
+              <span>같은 기숙사면 좋지만 꼭 그럴 필요는 없어요</span>
+            </label>
+            <label class="importance-item">
+              <input type="radio" name="dormImportance" value="3" class="mr-3" checked>
+              <span>보통</span>
+            </label>
+            <label class="importance-item">
+              <input type="radio" name="dormImportance" value="4" class="mr-3">
+              <span>웬만하면 같은 기숙사였으면 좋겠어요</span>
+            </label>
+            <label class="importance-item">
+              <input type="radio" name="dormImportance" value="5" class="mr-3">
+              <span>반드시 같은 기숙사여야 해요</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 청소 횟수 -->
+      <div class="section-card">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">🧹 청소 횟수</h3>
+        <div class="radio-group">
+          <label class="radio-item">
+            <input type="radio" name="cleanLevel" value="1" class="mr-3">
+            <span>주 1회</span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="cleanLevel" value="2" class="mr-3">
+            <span>주 2회</span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="cleanLevel" value="3" class="mr-3" checked>
+            <span>주 3회</span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="cleanLevel" value="4" class="mr-3">
+            <span>주 4회</span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="cleanLevel" value="5" class="mr-3">
+            <span>주 5회 이상</span>
+          </label>
+        </div>
+        
+        <div class="mt-4">
+          <p class="text-sm font-medium text-gray-700 mb-2">💡 청소 횟수 조건이 얼마나 중요한가요?</p>
+          <div class="importance-group">
+            <label class="importance-item">
+              <input type="radio" name="cleanImportance" value="1" class="mr-3">
+              <span>청소 횟수는 전혀 신경 안 써요</span>
+            </label>
+            <label class="importance-item">
+              <input type="radio" name="cleanImportance" value="2" class="mr-3">
+              <span>비슷하면 좋지만 크게 중요하지 않아요</span>
+            </label>
+            <label class="importance-item">
+              <input type="radio" name="cleanImportance" value="3" class="mr-3" checked>
+              <span>보통</span>
+            </label>
+            <label class="importance-item">
+              <input type="radio" name="cleanImportance" value="4" class="mr-3">
+              <span>비슷한 청소 패턴이면 좋겠어요</span>
+            </label>
+            <label class="importance-item">
+              <input type="radio" name="cleanImportance" value="5" class="mr-3">
+              <span>청소 횟수가 비슷해야 해요</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 취침 시간 -->
+      <div class="section-card">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">🌙 취침 시간</h3>
+        <div class="radio-group">
+          <label class="radio-item">
+            <input type="radio" name="sleepTime" value="1" class="mr-3">
+            <span>21시 이전</span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="sleepTime" value="2" class="mr-3" checked>
+            <span>21-23시</span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="sleepTime" value="3" class="mr-3">
+            <span>23-01시</span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="sleepTime" value="4" class="mr-3">
+            <span>01-02시</span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="sleepTime" value="5" class="mr-3">
+            <span>02시 이후</span>
+          </label>
+        </div>
+        
+        <div class="mt-4">
+          <p class="text-sm font-medium text-gray-700 mb-2">💡 수면 시간 조건이 얼마나 중요한가요?</p>
+          <div class="importance-group">
+            <label class="importance-item">
+              <input type="radio" name="sleepTimeImportance" value="1" class="mr-3">
+              <span>수면 시간은 상관없어요</span>
+            </label>
+            <label class="importance-item">
+              <input type="radio" name="sleepTimeImportance" value="2" class="mr-3">
+              <span>비슷하면 좋지만 다른 것도 괜찮아요</span>
+            </label>
+            <label class="importance-item">
+              <input type="radio" name="sleepTimeImportance" value="3" class="mr-3" checked>
+              <span>보통</span>
+            </label>
+            <label class="importance-item">
+              <input type="radio" name="sleepTimeImportance" value="4" class="mr-3">
+              <span>비슷한 수면 패턴이면 좋겠어요</span>
+            </label>
+            <label class="importance-item">
+              <input type="radio" name="sleepTimeImportance" value="5" class="mr-3">
+              <span>수면 시간이 비슷해야 해요</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 기상 시간 -->
+      <div class="section-card">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">☀️ 기상 시간</h3>
+        <div class="radio-group">
+          <label class="radio-item">
+            <input type="radio" name="wakeUpTime" value="1" class="mr-3">
+            <span>06시 이전</span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="wakeUpTime" value="2" class="mr-3">
+            <span>06-07시</span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="wakeUpTime" value="3" class="mr-3" checked>
+            <span>07-08시</span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="wakeUpTime" value="4" class="mr-3">
+            <span>08-10시</span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="wakeUpTime" value="5" class="mr-3">
+            <span>10시 이후</span>
+          </label>
+        </div>
+        
+        <div class="mt-4">
+          <p class="text-sm font-medium text-gray-700 mb-2">💡 기상 시간 조건이 얼마나 중요한가요?</p>
+          <div class="importance-group">
+            <label class="importance-item">
+              <input type="radio" name="wakeUpTimeImportance" value="1" class="mr-3">
+              <span>기상 시간은 상관없어요</span>
+            </label>
+            <label class="importance-item">
+              <input type="radio" name="wakeUpTimeImportance" value="2" class="mr-3">
+              <span>비슷하면 좋지만 다른 것도 괜찮아요</span>
+            </label>
+            <label class="importance-item">
+              <input type="radio" name="wakeUpTimeImportance" value="3" class="mr-3" checked>
+              <span>보통</span>
+            </label>
+            <label class="importance-item">
+              <input type="radio" name="wakeUpTimeImportance" value="4" class="mr-3">
+              <span>비슷한 기상 시간이면 좋겠어요</span>
+            </label>
+            <label class="importance-item">
+              <input type="radio" name="wakeUpTimeImportance" value="5" class="mr-3">
+              <span>기상 시간이 비슷해야 해요</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 흡연 관련 -->
+      <div class="section-card">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">🚭 흡연 관련</h3>
+        <p class="text-sm font-medium text-gray-700 mb-2">나는:</p>
+        <div class="radio-group mb-4">
+          <label class="radio-item">
+            <input type="radio" name="smoking" value="true" class="mr-3">
+            <span>흡연자입니다</span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="smoking" value="false" class="mr-3" checked>
+            <span>비흡연자입니다</span>
+          </label>
+        </div>
+        
+        <div class="mt-4">
+          <p class="text-sm font-medium text-gray-700 mb-2">💡 룸메이트의 흡연 여부는?</p>
+          <div class="importance-group">
+            <label class="importance-item">
+              <input type="radio" name="smokingPreference" value="1" class="mr-3">
+              <span>비흡연자였으면 좋겠어요</span>
+            </label>
+            <label class="importance-item">
+              <input type="radio" name="smokingPreference" value="2" class="mr-3" checked>
+              <span>흡연 여부는 상관없어요</span>
+            </label>
+            <label class="importance-item">
+              <input type="radio" name="smokingPreference" value="3" class="mr-3">
+              <span>흡연자였으면 좋겠어요</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 코골이 관련 -->
+      <div class="section-card">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">😴 코골이 관련</h3>
+        <p class="text-sm font-medium text-gray-700 mb-2">나는:</p>
+        <div class="radio-group mb-4">
+          <label class="radio-item">
+            <input type="radio" name="snoring" value="true" class="mr-3">
+            <span>코를 곤다</span>
+          </label>
+          <label class="radio-item">
+            <input type="radio" name="snoring" value="false" class="mr-3" checked>
+            <span>코를 안 곤다</span>
+          </label>
+        </div>
+        
+        <div class="mt-4">
+          <p class="text-sm font-medium text-gray-700 mb-2">💡 룸메이트의 코골이 여부는?</p>
+          <div class="importance-group">
+            <label class="importance-item">
+              <input type="radio" name="snoringPreference" value="1" class="mr-3">
+              <span>코 안 골았으면 좋겠어요</span>
+            </label>
+            <label class="importance-item">
+              <input type="radio" name="snoringPreference" value="2" class="mr-3" checked>
+              <span>코골이 여부는 상관없어요</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 기타 사항 -->
+      <div class="section-card">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">📝 기타 사항</h3>
+        <textarea id="etc" name="etc" rows="4" 
+                  class="w-full border border-gray-300 rounded-lg px-4 py-3 resize-none"
+                  placeholder="룸메이트에게 전하고 싶은 말이나 추가 조건이 있다면 자유롭게 작성해주세요. (카카오톡 ID 입력 바랍니다.)"></textarea>
+      </div>
+
+      <!-- 제출 버튼 -->
+      <div class="text-center">
+        <button type="submit" 
+                class="bg-red-500 hover:bg-red-600 text-white font-bold py-4 px-8 rounded-lg text-lg transition duration-200 shadow-lg">
+          설문조사 제출하기
+        </button>
+      </div>
+    </form>
+
+    <!-- 결과 표시 영역 -->
+    <div id="result" class="mt-8 hidden">
+      <div class="section-card text-center">
+        <h3 class="text-xl font-bold text-green-600 mb-4">✅ 설문조사가 완료되었습니다!</h3>
+        <p class="text-gray-700 mb-4">설문 ID: <span id="surveyId" class="font-bold text-blue-600"></span></p>
+        <p class="text-sm text-gray-600">이 ID로 매칭 결과를 확인할 수 있습니다.</p>
+        <div class="mt-4 space-x-4">
+  <button onclick="location.href='../mySurveys/mySurveys.html'" 
+          class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg transition">
+    매칭하기
+  </button>
+  <button onclick="location.href='../menu/menu.html'" 
+          class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition">
+    MENU
+  </button>
+</div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BASE_URL = 'https://minnow-perfect-humbly.ngrok-free.app';
+
+    document.getElementById('surveyForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // 폼 데이터 수집
+      const formData = new FormData(this);
+      const data = {
+        dormName: document.getElementById('dormName').value,
+        cleanLevel: formData.get('cleanLevel'),
+        smoking: formData.get('smoking') === 'true',
+        snoring: formData.get('snoring') === 'true',
+        sleepTime: formData.get('sleepTime'),
+        wakeUpTime: formData.get('wakeUpTime'),
+        etc: document.getElementById('etc').value,
+        dormImportance: parseInt(formData.get('dormImportance')),
+        cleanImportance: parseInt(formData.get('cleanImportance')),
+        sleepTimeImportance: parseInt(formData.get('sleepTimeImportance')),
+        wakeUpTimeImportance: parseInt(formData.get('wakeUpTimeImportance')),
+        smokingPreference: parseInt(formData.get('smokingPreference')),
+        snoringPreference: parseInt(formData.get('snoringPreference'))
+      };
+
+      // 필수 필드 검증
+      if (!data.dormName) {
+        alert('기숙사를 선택해주세요!');
+        return;
+      }
+
+      console.log('전송할 데이터:', data);
+
+      // 서버로 전송
+      fetch(`${BASE_URL}/surveys`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
+        credentials: 'include',
+        body: JSON.stringify(data)
+      })
+      .then(res => {
+        if (res.status === 401) {
+          alert('로그인이 필요합니다.');
+          window.location.href = '../login/login.html';
+          return;
+        }
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(result => {
+        console.log('서버 응답:', result);
+        
+        // 성공 시 결과 표시
+        document.getElementById('surveyId').textContent = result.id;
+        document.getElementById('result').classList.remove('hidden');
+        document.getElementById('surveyForm').style.display = 'none';
+        
+        // 페이지 상단으로 스크롤
+        window.scrollTo(0, 0);
+      })
+      .catch(err => {
+        console.error('설문조사 제출 실패:', err);
+        alert('설문조사 제출에 실패했습니다. 다시 시도해주세요.');
+      });
+    });
+  </script>
+  <p class="text-center text-sm text-gray-600 mt-4">
+ 
+</p>
+
+</body>
+</html>

@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>설문 목록 - KNU myroomie</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #fbc2eb, #a6c1ee, #fddb92);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .survey-card {
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .survey-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 1);
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .tag-smoking { background: #fee2e2; color: #dc2626; }
+    .tag-no-smoking { background: #dcfce7; color: #16a34a; }
+    .tag-snoring { background: #fef3c7; color: #d97706; }
+    .tag-no-snoring { background: #e0f2fe; color: #0369a1; }
+
+    .dorm-badge {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .loading-spinner {
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 3px solid #667eea;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+    }
+
+    .skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: skeleton-loading 1.5s infinite;
+    }
+
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes skeleton-loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in { animation: fadeIn 0.5s ease-out; }
+
+    .connection-status {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      z-index: 100;
+      transition: all 0.3s ease;
+    }
+
+    .connection-online {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+
+    .connection-offline {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .retry-button {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .retry-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .retry-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Connection Status Indicator -->
+  <div id="connectionStatus" class="connection-status connection-online" style="display: none;">
+    🟢 연결됨
+  </div>
+
+  <div class="container mx-auto px-4 py-8">
+    <!-- Header (로고 클릭 시 메뉴 이동) -->
+    <div class="text-center mb-10">
+      <a href="../menu/menu.html">
+        <h1 class="text-4xl font-bold text-red-600 mb-2 drop-shadow-lg">
+          KNU myroomie
+        </h1>
+      </a>
+      <p class="text-xl text-red-600 drop-shadow">
+        룸메이트 찾기 설문 목록
+      </p>
+    </div>
+
+    <!-- Main Container -->
+    <div class="max-w-4xl mx-auto">
+      <!-- Stats Card -->
+      <div class="glass-card rounded-2xl p-6 mb-8 text-black">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
+          <div>
+            <div class="text-2xl font-bold" id="totalSurveys">-</div>
+            <div class="text-sm opacity-80">총 설문 수</div>
+          </div>
+          <div>
+            <div class="text-2xl font-bold" id="recentSurveys">-</div>
+            <div class="text-sm opacity-80">오늘 작성</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Section -->
+      <div class="glass-card rounded-2xl p-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <select id="dormFilter" class="px-4 py-2 rounded-lg bg-white/90 text-gray-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+            <option value="">모든 기숙사</option>
+          </select>
+          <select id="cleanFilter" class="px-4 py-2 rounded-lg bg-white/90 text-gray-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+            <option value="">주 청소 횟수</option>
+            <option value="1">1회 / 주</option>
+            <option value="2">2회 / 주</option>
+            <option value="3">3회 / 주</option>
+            <option value="4">4회 / 주</option>
+            <option value="5">5회 / 주</option>
+          </select>
+          <select id="smokingFilter" class="px-4 py-2 rounded-lg bg-white/90 text-gray-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+            <option value="">흡연 무관</option>
+            <option value="true">흡연자</option>
+            <option value="false">비흡연자</option>
+          </select>
+          <button id="resetFilter" class="px-4 py-2 rounded-lg bg-white/20 text-black hover:bg-white/30 transition-colors">
+            필터 초기화
+          </button>
+        </div>
+      </div>
+
+      <!-- Survey List -->
+      <div id="surveyList" class="space-y-6">
+        <!-- 초기 로딩 상태 -->
+        <div id="initialLoading" class="flex flex-col items-center py-12">
+          <div class="loading-spinner mb-4"></div>
+          <div class="text-black text-lg">설문 목록을 불러오는 중...</div>
+          <div class="text-black/70 text-sm mt-2">잠시만 기다려주세요</div>
+        </div>
+      </div>
+      
+      <!-- 필터링 로딩 오버레이 -->
+      <div id="filterLoading" class="loading-overlay" style="display: none;">
+        <div class="glass-card rounded-2xl p-8 text-center">
+          <div class="loading-spinner mx-auto mb-4"></div>
+          <div class="text-black text-lg">필터링 중...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BASE_URL = 'https://minnow-perfect-humbly.ngrok-free.app';
+    let allSurveys = [];
+    let filteredSurveys = [];
+    let isLoading = false;
+    let retryCount = 0;
+    let maxRetries = 3;
+    let retryDelay = 1000;
+
+    // 연결 상태 관리
+    let isOnline = navigator.onLine;
+    const connectionStatus = document.getElementById('connectionStatus');
+
+    function updateConnectionStatus() {
+      if (isOnline) {
+        connectionStatus.textContent = '🟢 연결됨';
+        connectionStatus.className = 'connection-status connection-online';
+      } else {
+        connectionStatus.textContent = '🔴 연결 끊김';
+        connectionStatus.className = 'connection-status connection-offline';
+      }
+      connectionStatus.style.display = 'block';
+      
+      setTimeout(() => {
+        if (isOnline) {
+          connectionStatus.style.display = 'none';
+        }
+      }, 3000);
+    }
+
+    window.addEventListener('online', () => {
+      isOnline = true;
+      updateConnectionStatus();
+      if (allSurveys.length === 0) {
+        loadSurveys();
+      }
+    });
+
+    window.addEventListener('offline', () => {
+      isOnline = false;
+      updateConnectionStatus();
+    });
+
+    // 페이지 완전 로드 확인
+    function waitForPageLoad() {
+      return new Promise((resolve) => {
+        if (document.readyState === 'complete') {
+          resolve();
+        } else {
+          window.addEventListener('load', resolve);
+        }
+      });
+    }
+
+    // 로딩 상태 관리
+    function showLoading(type = 'initial') {
+      isLoading = true;
+      if (type === 'initial') {
+        document.getElementById('initialLoading').style.display = 'flex';
+      } else if (type === 'filter') {
+        document.getElementById('filterLoading').style.display = 'flex';
+      }
+    }
+
+    function hideLoading(type = 'initial') {
+      isLoading = false;
+      if (type === 'initial') {
+        document.getElementById('initialLoading').style.display = 'none';
+      } else if (type === 'filter') {
+        document.getElementById('filterLoading').style.display = 'none';
+      }
+    }
+
+    // 시간 레이블 매핑
+    function getTimeLabel(code, type) {
+      const sleepLabels = { '1': '21-22시', '2': '22-23시', '3': '23-24시', '4': '24-01시', '5': '01시 이후' };
+      const wakeLabels = { '1': '06시 이전', '2': '06-07시', '3': '07-08시', '4': '08-10시', '5': '10시 이후' };
+      return type === 'sleep' ? sleepLabels[code] : wakeLabels[code];
+    }
+
+    // 설문 카드 렌더링 함수 (향상된 디자인)
+    function renderSurveyCard(survey) {
+      return `
+        <div class="survey-card rounded-2xl p-6 fade-in">
+          <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <!-- Left Section -->
+            <div class="flex-1">
+              <div class="flex flex-wrap items-center gap-3 mb-4">
+                <span class="dorm-badge">${survey.dormName}</span>
+                <div class="flex items-center gap-1">
+                  <span class="text-sm text-gray-600">주 청소 횟수:</span>
+                  <span class="font-medium">${survey.cleanLevel}회 / 주</span>
+                </div>
+              </div>
+              
+              <div class="space-y-3">
+                <div class="flex flex-wrap gap-2">
+                  <span class="tag ${survey.smoking ? 'tag-smoking' : 'tag-no-smoking'}">
+                    ${survey.smoking ? '🚬 흡연' : '🚭 비흡연'}
+                  </span>
+                  <span class="tag ${survey.snoring ? 'tag-snoring' : 'tag-no-snoring'}">
+                    ${survey.snoring ? '😴 코골이' : '😌 코골이 안함'}
+                  </span>
+                </div>
+
+                <div class="text-sm text-gray-600">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span>😴 수면시간:</span>
+                    <span class="font-medium">${getTimeLabel(survey.sleepTime, 'sleep')}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span>☀️ 기상시간:</span>
+                    <span class="font-medium">${getTimeLabel(survey.wakeUpTime, 'wake')}</span>
+                  </div>
+                </div>
+
+                ${survey.etc ? `
+                  <div class="bg-gray-50 p-3 rounded-lg">
+                    <span class="text-sm text-gray-500">💬 한마디:</span>
+                    <p class="text-sm text-gray-700 mt-1">${survey.etc}</p>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+            
+            <!-- Right Section -->
+            <div class="md:text-right">
+              <div class="bg-gradient-to-r from-purple-100 to-blue-100 p-3 rounded-lg">
+                <div class="font-semibold text-gray-800">${survey.user.name}</div>
+                <div class="text-sm text-gray-600">@${survey.user.username}</div>
+                <div class="text-xs text-gray-500 mt-2">${survey.createdAt}</div>
+                ${survey.mine ? '<div class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded mt-2">내 설문</div>' : ''}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 통계 업데이트 함수
+    function updateStats(surveys) {
+      const totalSurveys = surveys.length;
+      const today = new Date().toISOString().split('T')[0];
+      const recentSurveys = surveys.filter(s => s.createdAt.startsWith(today)).length;
+
+      document.getElementById('totalSurveys').textContent = totalSurveys;
+      document.getElementById('recentSurveys').textContent = recentSurveys;
+    }
+
+    // 기숙사 필터 옵션 생성
+    function populateDormFilter(surveys) {
+      const dorms = [...new Set(surveys.map(s => s.dormName))].sort();
+      const dormFilter = document.getElementById('dormFilter');
+      
+      // 기존 옵션 제거 (첫 번째 옵션 제외)
+      while (dormFilter.children.length > 1) {
+        dormFilter.removeChild(dormFilter.lastChild);
+      }
+      
+      dorms.forEach(dorm => {
+        const option = document.createElement('option');
+        option.value = dorm;
+        option.textContent = dorm;
+        dormFilter.appendChild(option);
+      });
+    }
+
+    // 필터링 함수 (디바운싱 적용)
+    let filterTimeout;
+    function applyFilters() {
+      if (isLoading) return;
+
+      clearTimeout(filterTimeout);
+      filterTimeout = setTimeout(() => {
+        showLoading('filter');
+        
+        setTimeout(() => {
+          const dormFilter = document.getElementById('dormFilter').value;
+          const cleanFilter = document.getElementById('cleanFilter').value;
+          const smokingFilter = document.getElementById('smokingFilter').value;
+
+          filteredSurveys = allSurveys.filter(survey => {
+            if (dormFilter && survey.dormName !== dormFilter) return false;
+            if (cleanFilter && survey.cleanLevel !== cleanFilter) return false;
+            if (smokingFilter !== '' && survey.smoking.toString() !== smokingFilter) return false;
+            return true;
+          });
+
+          renderSurveys();
+          hideLoading('filter');
+        }, 300);
+      }, 300);
+    }
+
+    // 설문 목록 렌더링
+    function renderSurveys() {
+      const listDiv = document.getElementById('surveyList');
+      
+      if (filteredSurveys.length === 0) {
+        listDiv.innerHTML = `
+          <div class="text-center py-12 fade-in">
+            <div class="text-6xl mb-4">🔍</div>
+            <h3 class="text-xl font-semibold text-black mb-2">설문을 찾을 수 없습니다</h3>
+            <p class="text-black/80">다른 조건으로 검색해보세요</p>
+          </div>
+        `;
+        return;
+      }
+
+      listDiv.innerHTML = '';
+      filteredSurveys.forEach((survey, index) => {
+        setTimeout(() => {
+          const cardElement = document.createElement('div');
+          cardElement.innerHTML = renderSurveyCard(survey);
+          listDiv.appendChild(cardElement.firstElementChild);
+        }, index * 100);
+      });
+    }
+
+    // 재시도 함수 (지수 백오프 적용)
+    function retryLoad() {
+      if (retryCount >= maxRetries) {
+        document.getElementById('surveyList').innerHTML = `
+          <div class="text-center py-12 fade-in">
+            <div class="text-6xl mb-4">❌</div>
+            <h3 class="text-xl font-semibold text-black mb-2">최대 재시도 횟수 초과</h3>
+            <p class="text-black/80 mb-4">잠시 후 다시 시도해주세요</p>
+            <button onclick="resetAndRetry()" class="retry-button">
+              처음부터 다시 시도
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      const delay = retryDelay * Math.pow(2, retryCount);
+      retryCount++;
+      
+      setTimeout(() => {
+        showLoading('initial');
+        loadSurveys();
+      }, delay);
+    }
+
+    function resetAndRetry() {
+      retryCount = 0;
+      showLoading('initial');
+      loadSurveys();
+    }
+
+    // 서버 상태 확인
+    async function checkServerHealth() {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        
+        const response = await fetch(`${BASE_URL}/auth/profile`, {
+          method: 'GET',
+          signal: controller.signal,
+          credentials: 'include'
+        });
+        
+        clearTimeout(timeoutId);
+        return response.ok;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    // 메인 데이터 로딩 함수 (안정성 강화)
+    async function loadSurveys() {
+      if (!isOnline) {
+        hideLoading('initial');
+        document.getElementById('surveyList').innerHTML = `
+          <div class="text-center py-12 fade-in">
+            <div class="text-6xl mb-4">📶</div>
+            <h3 class="text-xl font-semibold text-black mb-2">인터넷 연결 없음</h3>
+            <p class="text-black/80 mb-4">네트워크 연결을 확인해주세요</p>
+            <button onclick="loadSurveys()" class="retry-button">
+              다시 시도
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      try {
+        // 서버 상태 먼저 확인
+        const isServerHealthy = await checkServerHealth();
+        if (!isServerHealthy && retryCount === 0) {
+          throw new Error('서버에 연결할 수 없습니다');
+        }
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10초 타임아웃
+
+        const response = await fetch(`${BASE_URL}/surveys/list`, {
+          method: 'GET',
+          credentials: 'include',
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        
+        // 성공 시 초기화
+        retryCount = 0;
+        
+        // 부드러운 전환을 위한 지연
+        setTimeout(() => {
+          allSurveys = data || [];
+          filteredSurveys = [...allSurveys];
+          
+          updateStats(allSurveys);
+          populateDormFilter(allSurveys);
+          hideLoading('initial');
+          renderSurveys();
+        }, 500);
+
+      } catch (error) {
+        console.error('데이터 로딩 오류:', error);
+        hideLoading('initial');
+        
+        if (error.name === 'AbortError') {
+          document.getElementById('surveyList').innerHTML = `
+            <div class="text-center py-12 fade-in">
+              <div class="text-6xl mb-4">⏱️</div>
+              <h3 class="text-xl font-semibold text-black mb-2">요청 시간 초과</h3>
+              <p class="text-black/80 mb-4">서버 응답이 너무 느립니다</p>
+              <button onclick="retryLoad()" class="retry-button">
+                다시 시도 (${retryCount + 1}/${maxRetries})
+              </button>
+            </div>
+          `;
+        } else {
+          document.getElementById('surveyList').innerHTML = `
+            <div class="text-center py-12 fade-in">
+              <div class="text-6xl mb-4">❌</div>
+              <h3 class="text-xl font-semibold text-black mb-2">불러오기 실패</h3>
+              <p class="text-black/80 mb-4">${error.message}</p>
+              <button onclick="retryLoad()" class="retry-button" ${retryCount >= maxRetries ? 'disabled' : ''}>
+                ${retryCount >= maxRetries ? '최대 재시도 초과' : `다시 시도 (${retryCount + 1}/${maxRetries})`}
+              </button>
+            </div>
+          `;
+        }
+        
+        if (retryCount < maxRetries) {
+          retryLoad();
+        }
+      }
+    }
+
+    // 이벤트 리스너 설정
+    document.getElementById('dormFilter').addEventListener('change', applyFilters);
+    document.getElementById('cleanFilter').addEventListener('change', applyFilters);
+    document.getElementById('smokingFilter').addEventListener('change', applyFilters);
+    document.getElementById('resetFilter').addEventListener('click', () => {
+      if (isLoading) return;
+      
+      document.getElementById('dormFilter').value = '';
+      document.getElementById('cleanFilter').value = '';
+      document.getElementById('smokingFilter').value = '';
+      
+      showLoading('filter');
+      setTimeout(() => {
+        filteredSurveys = [...allSurveys];
+        renderSurveys();
+        hideLoading('filter');
+      }, 200);
+    });
+
+    // 페이지 로드 완료 후 데이터 가져오기
+    waitForPageLoad().then(() => {
+      // 페이지 로드 후 추가 지연으로 안정성 확보
+      setTimeout(() => {
+        showLoading('initial');
+        loadSurveys();
+      }, 100);
+    });
+
+    // 페이지 가시성 변경 시 처리
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && allSurveys.length === 0 && !isLoading) {
+        showLoading('initial');
+        loadSurveys();
+      }
+    });
+  </script>
+</body>
+</html>
