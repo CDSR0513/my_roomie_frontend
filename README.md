@@ -1,4 +1,5 @@
 🛏️ KNU myroomie - 경북대 기숙사 룸메이트 매칭 플랫폼
+
 📌 프로젝트 개요
 KNU myroomie는 경북대학교 학생들을 위한 기숙사 룸메이트 매칭 웹 서비스입니다.
 
@@ -21,12 +22,14 @@ API 설계 담당
 UI/UX 디자인 담당
 최다사랑: 프론트엔드 개발
 UI/UX 디자인 담당
+
 🌐 주요 기능
 사용 기술
 Frontend: HTML, Tailwind CSS, Vanilla JavaScript
 Backend: Java, Spring Boot, Spring Security, JPA
 Database: MySQL (H2 for local test)
 Tooling: GitHub, ngrok (개발용 배포), Postman, Notion
+
 레포지토리
 Frontend: https://github.com/CDSR0513/my_roomie_frontend
 Backend: https://github.com/junhyung-dev/my_roomie_backend
