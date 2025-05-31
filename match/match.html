@@ -111,12 +111,24 @@
     }
 
     function convertSleepTime(timeCode) {
-      const timeMap = { '1': '21시 이전', '2': '21시-23시', '3': '23시-01시', '4': '01시-02시', '5': '02시 이후' };
+      const timeMap = {
+        '1': '21시 이전',
+        '2': '21시-23시',
+        '3': '23시-01시',
+        '4': '01시-02시',
+        '5': '02시 이후'
+      };
       return timeMap[timeCode] || '미설정';
     }
 
     function convertWakeTime(timeCode) {
-      const timeMap = { '1': '06시 이전', '2': '06시-07시', '3': '07시-08시', '4': '08시-10시', '5': '10시 이후' };
+      const timeMap = {
+        '1': '06시 이전',
+        '2': '06시-07시',
+        '3': '07시-08시',
+        '4': '08시-10시',
+        '5': '10시 이후'
+      };
       return timeMap[timeCode] || '미설정';
     }
 
