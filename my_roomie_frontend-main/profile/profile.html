@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>내 프로필</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #fbc2eb, #a6c1ee, #fddb92);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .bg-overlay {
+      background-color: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(4px);
+    }
+    /* 밑줄 색 연한 분홍색 */
+    .pink-underline {
+      position: relative;
+    }
+    .pink-underline::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      left: 0;
+      bottom: -2px;
+      background-color: #fbcfe8; /* 연한 분홍 Tailwind 색 (#fbcfe8) */
+      transition: width 0.3s ease;
+    }
+    .pink-underline:hover::after {
+      width: 100%;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center space-y-6">
+
+  <!-- 로고 -->
+  <div class="text-center">
+    <a href="../menu/menu.html" class="pink-underline">
+      <h1 class="text-3xl font-extrabold text-red-600 drop-shadow">
+        KNU myroomie
+      </h1>
+      <p class="text-lg font-medium text-red-600 drop-shadow">
+        KNU dormitory roommate finder
+      </p>
+    </a>
+  </div>
+
+  <!-- 카드 -->
+  <div class="bg-overlay p-8 rounded-lg shadow-md w-full max-w-sm">
+    <h2 class="text-2xl font-bold text-center text-black mb-6">내 프로필</h2>
+    <p><strong>아이디:</strong> <span id="username">로딩 중...</span></p>
+    <p><strong>이름:</strong> <span id="name">로딩 중...</span></p>
+    <p id="error-message" class="text-red-500 text-sm mt-2 hidden"></p>
+    <button onclick="logout()" class="mt-4 w-full bg-red-300 text-white py-2 rounded hover:bg-red-400 transition">
+      로그아웃
+    </button>
+
+    <!-- 디버깅용 버튼 -->
+    <button onclick="loadProfile()" class="mt-2 w-full bg-blue-300 text-white py-2 rounded hover:bg-blue-400 transition text-sm">
+      프로필 다시 로드
+    </button>
+  </div>
+
+  <!-- 하단 메뉴 링크 -->
+  <p class="text-center text-sm text-gray-600 mt-4">
+    <a href="../menu/menu.html" class="pink-underline font-semibold">
+      MENU
+    </a>
+  </p>
+
+  <script>
+    const BASE_URL = 'https://minnow-perfect-humbly.ngrok-free.app';
+
+    function loadProfile() {
+      document.getElementById('username').textContent = '로딩 중...';
+      document.getElementById('name').textContent = '로딩 중...';
+      document.getElementById('error-message').classList.add('hidden');
+
+      fetch(`${BASE_URL}/auth/profile`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(res => {
+        if (res.status === 401) {
+          alert('로그인이 필요합니다.');
+          window.location.href = '../login/login.html';
+          return null;
+        }
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (!data) return;
+        document.getElementById('username').textContent = data.username;
+        document.getElementById('name').textContent = data.name;
+      })
+      .catch(err => {
+        document.getElementById('username').textContent = '로드 실패';
+        document.getElementById('name').textContent = '로드 실패';
+        const errorMsg = document.getElementById('error-message');
+        errorMsg.textContent = `오류: ${err.message}`;
+        errorMsg.classList.remove('hidden');
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadProfile);
+    window.addEventListener('load', () => {
+      if (document.getElementById('username').textContent === '로딩 중...') {
+        setTimeout(loadProfile, 100);
+      }
+    });
+
+    function logout() {
+      fetch(`${BASE_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(() => {
+        alert('로그아웃 되었습니다.');
+        window.location.href = '../login/login.html';
+      })
+      .catch(err => {
+        alert('로그아웃 중 오류 발생');
+      });
+    }
+  </script>
+
+</body>
+</html>

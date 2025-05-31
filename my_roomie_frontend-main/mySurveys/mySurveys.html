@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>매칭하기</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #fbc2eb, #a6c1ee, #fddb92);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .bg-overlay {
+      background-color: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(4px);
+    }
+    .survey-item {
+      transition: all 0.3s ease;
+    }
+    .survey-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center space-y-6">
+
+  <!-- 로고 클릭 시 menu.html 이동 -->
+  <div class="text-center">
+    <a href="../menu/menu.html">
+      <h1 class="text-3xl font-extrabold text-red-600 drop-shadow cursor-pointer">
+        KNU myroomie
+      </h1>
+    </a>
+    <p class="text-lg font-medium text-red-600 drop-shadow">
+      KNU dormitory roommate finder
+    </p>
+  </div>
+
+  <div class="bg-overlay p-8 rounded-lg shadow-md w-full max-w-md">
+    <h2 class="text-2xl font-bold text-center text-black mb-6">매칭하기</h2>
+    
+    <!-- 설문조사 목록 -->
+    <div id="surveyList" class="space-y-4">
+      <!-- 설문조사 항목들이 여기에 동적으로 추가됩니다 -->
+    </div>
+    
+    <!-- 로딩 상태 -->
+    <div id="loading" class="text-center py-8">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto"></div>
+      <p class="mt-2 text-gray-600">설문조사를 불러오는 중...</p>
+    </div>
+    
+    <!-- 설문조사가 없을 때 -->
+    <div id="noSurveys" class="text-center py-8 hidden">
+      <p class="text-gray-600">아직 작성한 설문조사가 없습니다.</p>
+      <button class="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors">
+        새 설문조사 작성하기
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const BASE_URL = 'https://minnow-perfect-humbly.ngrok-free.app';
+
+    function convertSleepTime(timeCode) {
+      const timeMap = {
+        '1': '21시 이전',
+        '2': '21시 - 23시',
+        '3': '23시 - 01시',
+        '4': '01시 - 02시',
+        '5': '02시 이후'
+      };
+      return timeMap[timeCode] || '미설정';
+    }
+
+    function convertWakeTime(timeCode) {
+      const timeMap = {
+        '1': '06시 이전',
+        '2': '06시 - 07시',
+        '3': '07시 - 08시',
+        '4': '08시 - 10시',
+        '5': '10시 이후'
+      };
+      return timeMap[timeCode] || '미설정';
+    }
+
+    function renderSurveys(surveys) {
+      const surveyList = document.getElementById('surveyList');
+      const loading = document.getElementById('loading');
+      const noSurveys = document.getElementById('noSurveys');
+      
+      loading.style.display = 'none';
+      
+      if (surveys.length === 0) {
+        noSurveys.classList.remove('hidden');
+        return;
+      }
+      
+      surveyList.innerHTML = surveys.map(survey => `
+        <div class="survey-item bg-white p-4 rounded-lg border border-gray-200 cursor-pointer">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <h3 class="font-semibold text-gray-800 text-lg">기숙사: ${survey.dormName}</h3>
+              <p class="text-sm text-gray-500">ID: ${survey.id}</p>
+            </div>
+          </div>
+          
+          <div class="space-y-2 mb-4 text-sm">
+            <div class="flex justify-between">
+              <span class="text-gray-600">주 청소 횟수:</span>
+              <span class="font-medium">${survey.cleanLevel}회 / 1주</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">흡연:</span>
+              <span class="font-medium ${survey.smoking ? 'text-red-600' : 'text-green-600'}">
+                ${survey.smoking ? '예' : '아니오'}
+              </span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">코골이:</span>
+              <span class="font-medium ${survey.snoring ? 'text-red-600' : 'text-green-600'}">
+                ${survey.snoring ? '예' : '아니오'}
+              </span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">수면시간:</span>
+              <span class="font-medium">${convertSleepTime(survey.sleepTime)}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">기상시간:</span>
+              <span class="font-medium">${convertWakeTime(survey.wakeUpTime)}</span>
+            </div>
+            ${survey.etc ? `
+              <div class="pt-2 border-t border-gray-100">
+                <span class="text-gray-600 text-xs">기타:</span>
+                <p class="text-sm text-gray-700 mt-1">${survey.etc}</p>
+              </div>
+            ` : ''}
+          </div>
+          
+          <div class="flex justify-between items-center text-xs text-gray-500 mb-3">
+            <span>작성일: ${survey.createdAt}</span>
+          </div>
+          
+          <button 
+            onclick="requestMatching(${survey.id})" 
+            class="w-full bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition-colors font-medium"
+          >
+            해당 설문으로 매칭
+          </button>
+        </div>
+      `).join('');
+    }
+
+    async function requestMatching(surveyId) {
+      try {
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = '매칭 중...';
+        button.disabled = true;
+        
+        const response = await fetch(`${BASE_URL}/surveys/matching?id=${surveyId}`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true'
+          }
+        });
+        
+        if (response.ok) {
+          window.location.href = `../match/match.html?surveyId=${surveyId}`;
+        } else {
+          throw new Error('매칭 요청 실패');
+        }
+      } catch (error) {
+        console.error('매칭 요청 오류:', error);
+        alert('매칭 요청 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        button.textContent = originalText;
+        button.disabled = false;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+          const response = await fetch(`${BASE_URL}/surveys/my`, {
+              method: 'GET',
+              credentials: 'include',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'ngrok-skip-browser-warning': 'true'
+              }
+          });
+          
+          if (!response.ok) {
+              throw new Error(`서버 응답 오류: ${response.status}`);
+          }
+          
+          const surveys = await response.json();
+          renderSurveys(surveys);
+      } catch (error) {
+          console.error('설문조사 목록 로드 오류:', error);
+          document.getElementById('loading').innerHTML = 
+            '<p class="text-red-600">설문조사를 불러오는 중 오류가 발생했습니다.</p>';
+      }
+    });
+  </script>
+</body>
+</html>

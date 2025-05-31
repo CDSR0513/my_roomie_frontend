@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>설문 삭제</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #fbc2eb, #a6c1ee, #fddb92);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .bg-overlay {
+      background-color: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center space-y-6">
+
+  <div class="text-center">
+    <h1 class="text-3xl font-extrabold text-red-600 drop-shadow">
+      KNU myroomie
+    </h1>
+    <p class="text-lg font-medium text-red-600 drop-shadow">
+      KNU dormitory roommate finder
+    </p>
+  </div>
+
+  <div class="bg-overlay p-8 rounded-lg shadow-md w-full max-w-md">
+    <h2 class="text-2xl font-bold text-center text-black mb-6">설문 삭제</h2>
+
+    <div class="space-y-4">
+      <input type="text" id="surveyId" placeholder="삭제할 설문 ID 입력"
+             class="w-full border border-gray-300 rounded px-3 py-2" />
+      <button id="deleteBtn"
+              class="w-full bg-red-300 text-white py-2 rounded hover:bg-red-400 transition">
+        설문 삭제하기
+      </button>
+    </div>
+
+    <div id="deleteResult" class="mt-6 text-center text-sm text-gray-600">
+      설문 ID를 입력 후 삭제 버튼을 눌러주세요.
+    </div>
+  </div>
+
+  <script>
+    const BASE_URL = 'https://minnow-perfect-humbly.ngrok-free.app';
+
+    document.getElementById('deleteBtn').addEventListener('click', function() {
+      const id = document.getElementById('surveyId').value.trim();
+      if (!id) {
+        alert('설문 ID를 입력해주세요!');
+        return;
+      }
+
+      if (!confirm(`정말 설문 ID ${id}를 삭제하시겠습니까?`)) {
+        return;
+      }
+
+      fetch(`${BASE_URL}/surveys/delete?id=${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('삭제 실패');
+        document.getElementById('deleteResult').textContent = `설문 ID ${id} 삭제 완료 ✅`;
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById('deleteResult').textContent = '삭제 중 오류 발생 ❌';
+      });
+    });
+  </script>
+</body>
+</html>
